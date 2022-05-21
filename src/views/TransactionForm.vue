@@ -5,13 +5,13 @@
 			<p class="alert alert-danger" v-if="error">{{ error }}</p>
 
 			<div class="form-group">
-				<label for="inputAmount" class="sr-only">Amount</label>
+				<label for="inputAmount">Amount</label>
 				<input
 					type="number"
 					id="inputAmount"
 					class="form-control"
 					:class="{ 'is-invalid': fieldErrors.amount }"
-					placeholder="Amount" min="0" step=".01" required=""
+					min="0" step=".01" required=""
 					v-model="amount"
 				/>
 			
@@ -21,13 +21,14 @@
 			</div>
 
 			<div class="form-group">
-				<label for="inputDescription" class="sr-only">Category</label>
+				<label for="inputCategory">Category</label>
 				<select
 					class="form-control"
+					id="inputCategory"
 					:class="{ 'is-invalid': fieldErrors.category_id }"
 					v-model="category_id"
 				>
-					<option value="">Uncategorized</option>
+					<option value="" selected>Uncategorized</option>
 					<option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
 				</select>
 
@@ -37,13 +38,12 @@
 			</div>
 
 			<div class="form-group">
-				<label for="inputDescription" class="sr-only">Description</label>
+				<label for="inputDescription">Description</label>
 				<input
 					type="text"
 					id="inputDescription"
 					class="form-control"
 					:class="{ 'is-invalid': fieldErrors.description }"
-					placeholder="Description"
 					v-model="description"
 				/>
 
@@ -53,10 +53,9 @@
 			</div>
 
 			<div class="form-group">
-				<label for="inputDate" class="sr-only">Date</label>
+				<label for="inputDate">Date</label>
 				<datepicker
 					id="inputDate"
-					placeholder="Date"
 					:input-class="{ 'is-invalid': fieldErrors.transaction_date, 'form-control': true }"
 					:format="'yyyy-MM-dd'"
 					required=""

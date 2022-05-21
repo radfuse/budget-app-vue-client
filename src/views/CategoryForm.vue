@@ -5,8 +5,8 @@
 			<p class="alert alert-danger" v-if="error">{{ error }}</p>
 
 			<div class="form-group">
-				<label for="inputName" class="sr-only">Name</label>
-				<input type="text" id="inputName" class="form-control" placeholder="Name" required="" v-model="name">
+				<label for="inputName">Name</label>
+				<input type="text" id="inputName" class="form-control" required="" v-model="name">
 			</div>
 
             <button class="btn btn btn-success" type="submit">Save</button>

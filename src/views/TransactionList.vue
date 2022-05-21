@@ -1,18 +1,23 @@
 <template>
 	<div>
-        <p>
+        <div class="mb-3">
             <router-link class="btn btn-success" :to="{ name: 'TransactionIncoming' }">Add income</router-link>
             <router-link class="btn btn-success ml-1" :to="{ name: 'TransactionExpense' }">Add expense</router-link>
-        </p>
+
+            <button type="button" class="btn btn-secondary float-right" @click="filterOpen = !filterOpen" :class="{ 'active': filterOpen }">Filter</button>
+        </div>
+
+        <TransactionFilter :open="filterOpen" :setFilter="setFilter" />
+
 		<div v-if="loaded">
             <div v-if="data && data.length">
                 <table class="table table-sm">
                     <thead>
                         <tr>
-                            <th>Description</th>
-                            <th>Category</th>
-                            <th>Amount</th>
-                            <th>Date</th>
+                            <th><a href="#" @click.prevent="sort('description')">Description</a></th>
+                            <th><a href="#" @click.prevent="sort('category_id')">Category</a></th>
+                            <th><a href="#" @click.prevent="sort('amount')">Amount</a></th>
+                            <th><a href="#" @click.prevent="sort('transaction_date')">Date</a></th>
                             <th class="text-center">Actions</th>
                         </tr>
                     </thead>
@@ -50,19 +55,49 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import axios from 'axios'
+import TransactionFilter from '../components/TransactionFilter'
 
 export default {
 	name: 'TransactionList',
+	components: {
+		TransactionFilter
+	},
 	data() {
 		return {
 			data: null,
 			loaded: false,
+            sortAttribute: false,
+            filterOpen: false,
+            filter: {
+                category_id: null
+            },
 		}
 	},
 	methods: {
 		fetchData() {
-			axios.get('/transaction')
+            let url = '/transaction'
+            let params = {}
+
+            if (Object.keys(this.filter).length > 0) {
+                for (const [key, value] of Object.entries(this.filter)) {
+                    if (value) {
+                        params['filter[' + key + ']'] = value
+                    }
+                }
+            }
+
+            if (this.sortAttribute) {
+                params['sort'] = this.sortAttribute
+            }
+
+            if (Object.keys(params).length > 0) {
+                let query = Object.entries(params).map(([key, val]) => `${key}=${val}`).join('&');
+                url += '?' + query
+            }
+
+			axios.get(url)
 				.then((res) => {
 					this.data = res.data
                     this.loaded = true
@@ -72,6 +107,20 @@ export default {
 					console.error(error)
 				})
 		},
+        sort(attribute) {
+            if (this.sortAttribute == attribute) {
+                this.sortAttribute = '-' + attribute
+            } else {
+                this.sortAttribute = attribute
+            }
+
+            this.fetchData()
+        },
+        setFilter(filter) {
+            Vue.set(this, 'filter', filter)
+            this.filterOpen = false
+            this.fetchData()
+        },
         deleteTransaction(id) {
             if (confirm('Do you really want to delete this item?')) {
                 axios.delete('/transaction/' + id)
